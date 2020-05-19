@@ -5,7 +5,7 @@ function route() {
 	$url = splitUrl();
 	// print_r($url);
 	// print_r(ROOT);
-	print_r(ROOT . 'controller/' . $url['controller'] . '.php');
+	// print_r(ROOT . 'controller/' . $url['controller'] . '.php');
 	// Er wordt een variable opgemaakt uit de URL, de eerste variabele wordt geplaatst in de key controller, de tweede wordt in de key action geplaatst. De overige worden in params geplaatst (als array)
 	// Als die niet bestaat, gaat hij de standaard controller inladen, welke in config.php is aangemaakt. 
 	// Hierna roept hij standaard de index functie aan.
@@ -30,13 +30,11 @@ function route() {
 			}
 		} else {
 			// Wanneer de action niet bestaat, wordt de errorpagina getoond
-			print_r("OWO");
 			require(ROOT . 'controller/ErrorController.php');
 			call_user_func('error_404');
 		}
 	} else {
 		// Wanneer de controller niet bestaat, wordt de errorpagina getoond
-		print_r("UWU");
 		require(ROOT . 'controller/ErrorController.php');
 		call_user_func('error_404');
 	}

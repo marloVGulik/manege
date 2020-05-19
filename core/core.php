@@ -1,13 +1,46 @@
 <?php
 
 // Functie om een database verbinding op te zetten. Hij geeft het database object terug
-function openDatabaseConnection() 
-{
-	$options = array(PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING);
+// function openDatabaseConnection() 
+// {
+// 	$options = array(PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING);
 	
-	$db = new PDO(DB_TYPE . ':host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET, DB_USER, DB_PASS, $options);
+// 	$db = new PDO(DB_TYPE . ':host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET, DB_USER, DB_PASS, $options);
 
-	return $db;
+// 	return $db;
+// }
+
+function createConn($DBuser, $DBpass, $DBname) {
+    $conn = NULL;
+    try {
+        $conn = new PDO(DB_TYPE . ':host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET, DB_USER, DB_PASS);
+    } catch(PDOexception $exception) {
+        echo $exception;
+        return NULL;
+    }
+    return $conn;
+}
+
+// function DBcommand($connection, $statement, $args) {
+function DBcommand($statement, $args) {
+    foreach(array_keys($args) as $currentArgKey) {
+        if($args[$currentArgKey] == NULL) {
+            return ['output' => NULL, 'errorCode' => "NOT ALL THINGS SET! ERROR BACKUP"]; // It should not reach this place!
+        }
+        $args[$currentArgKey] = htmlspecialchars($args[$currentArgKey]);
+    }
+
+	$connection = createConn("games-bot", "JAN8dpNUIAJjoBNx", "games");
+	if($connection != NULL) {
+		$execStatement = $connection->prepare($statement);
+		$execStatement->execute($args);
+		$connection = null;
+		$output = [
+			'output' => $execStatement->fetchAll(),
+			'errorCode' => $execStatement->errorCode()
+		];
+		return $output;
+	}
 }
 
 
@@ -29,38 +62,7 @@ function render($filename, $data = null)
 }
 
 
-// Mijn shit
-function createConn($DBuser, $DBpass, $DBname) {
-    $conn = NULL;
-    try {
-        $conn = new PDO('mysql:host=localhost;dbname=' . $DBname, $DBuser, $DBpass);
-    } catch(PDOexception $exception) {
-        echo $exception;
-        return NULL;
-    }
-    return $conn;
-}
-
-// function DBcommand($connection, $statement, $args) {
-function DBcommand($statement, $args) {
-    foreach(array_keys($args) as $currentArgKey) {
-        if($args[$currentArgKey] == NULL) {
-            return ['output' => NULL, 'errorCode' => "NOT ALL THINGS SET! ERROR BACKUP"]; // It should not reach this place!
-        }
-        $args[$currentArgKey] = htmlspecialchars($args[$currentArgKey]);
-    }
-
-    $connection = createConn("games-bot", "JAN8dpNUIAJjoBNx", "games");
-    $execStatement = $connection->prepare($statement);
-    $execStatement->execute($args);
-    $connection = null;
-    $output = [
-        'output' => $execStatement->fetchAll(),
-        'errorCode' => $execStatement->errorCode()
-    ];
-    return $output;
-}
-
+// Mijn code
 function printImg($location) {
     if(substr($location, 0, 4) != "http") {
         return "Data/" . $location;

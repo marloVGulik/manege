@@ -5,19 +5,14 @@
 			<th>Naam</th>
 		</tr>
 		
-
-		<tr>
-			<td>99041392</td>
-			<td>Johan ter Wolde</td>
-		</tr>
-		<tr>
-			<td>99041393</td>
-			<td>Johan Vlemmix</td>
-		</tr>
-		<tr>
-			<td>99041394</td>
-			<td>Ben Vreemdeling</td>
-		</tr>
+		<?php foreach($value as $tmpVal) {
+			?>
+				<tr>
+					<td><?= $tmpVal['student_id'] ?></td>
+					<td><?= $tmpVal['student_name'] ?></td>
+				</tr>			
+			<?php
+		} ?>
 		
 
 

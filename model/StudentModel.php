@@ -2,13 +2,5 @@
 
 function getAllStudents() 
 {
-	$db = openDatabaseConnection();
-
-	$sql = "SELECT * FROM student";
-	$query = $db->prepare($sql);
-	$query->execute();
-
-	$db = null;
-
-	return $query->fetchAll();
+	return DBcommand('SELECT * FROM student', []);
 }
