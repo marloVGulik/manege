@@ -1,9 +1,11 @@
 <?php
 // Met de route functie wordt bepaald welke controller en welke action er moet worden ingeladen
-function route()
-{
+function route() {
 	// Hier wordt de functie aangeroepen die de URL op splitst op het standaard seperatie teken (in PHP is dit een /)
 	$url = splitUrl();
+	// print_r($url);
+	// print_r(ROOT);
+	print_r(ROOT . 'controller/' . $url['controller'] . '.php');
 	// Er wordt een variable opgemaakt uit de URL, de eerste variabele wordt geplaatst in de key controller, de tweede wordt in de key action geplaatst. De overige worden in params geplaatst (als array)
 	// Als die niet bestaat, gaat hij de standaard controller inladen, welke in config.php is aangemaakt. 
 	// Hierna roept hij standaard de index functie aan.
@@ -28,27 +30,29 @@ function route()
 			}
 		} else {
 			// Wanneer de action niet bestaat, wordt de errorpagina getoond
+			print_r("OWO");
 			require(ROOT . 'controller/ErrorController.php');
 			call_user_func('error_404');
 		}
 	} else {
 		// Wanneer de controller niet bestaat, wordt de errorpagina getoond
+		print_r("UWU");
 		require(ROOT . 'controller/ErrorController.php');
 		call_user_func('error_404');
 	}
 }
 
 // De in de functie Route aangeroepen functie splitUrl
-function splitUrl()
-{
+function splitUrl() {
 	// Als er iets in de key url zit van $_GET, wordt de code uitgevoerd
 	if (isset($_GET['url'])) {
-
 			
 		// Met trim haal je de zwevende shlashes weg. Bijvoorbeeld:
 		// /Students/Edit/1/ wordt Students/Edit/1
-		$start_url = explode("?", $_SERVER['PHP_SELF'])[0];
+		// $start_url = explode("?", $_SERVER['PHP_SELF'])[0]; 
+		$start_url = explode("?", $_GET['url'])[0]; // De originele lijn werkt niet.
 		$tmp_url = trim($start_url , "/");
+
 	
 
 		// Dit haalt de vreemde karakters uit de strings weg

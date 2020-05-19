@@ -27,3 +27,51 @@ function render($filename, $data = null)
 	require(ROOT . 'view/' . $filename . '.php');
 	require(ROOT . 'view/templates/footer.php');
 }
+
+
+// Mijn shit
+function createConn($DBuser, $DBpass, $DBname) {
+    $conn = NULL;
+    try {
+        $conn = new PDO('mysql:host=localhost;dbname=' . $DBname, $DBuser, $DBpass);
+    } catch(PDOexception $exception) {
+        echo $exception;
+        return NULL;
+    }
+    return $conn;
+}
+
+// function DBcommand($connection, $statement, $args) {
+function DBcommand($statement, $args) {
+    foreach(array_keys($args) as $currentArgKey) {
+        if($args[$currentArgKey] == NULL) {
+            return ['output' => NULL, 'errorCode' => "NOT ALL THINGS SET! ERROR BACKUP"]; // It should not reach this place!
+        }
+        $args[$currentArgKey] = htmlspecialchars($args[$currentArgKey]);
+    }
+
+    $connection = createConn("games-bot", "JAN8dpNUIAJjoBNx", "games");
+    $execStatement = $connection->prepare($statement);
+    $execStatement->execute($args);
+    $connection = null;
+    $output = [
+        'output' => $execStatement->fetchAll(),
+        'errorCode' => $execStatement->errorCode()
+    ];
+    return $output;
+}
+
+function printImg($location) {
+    if(substr($location, 0, 4) != "http") {
+        return "Data/" . $location;
+    } else {
+        return $location;
+    }
+}
+
+function existPrintArray($arr, $key) {
+    if(isset($arr[$key])) {
+        return $arr[$key];
+    }
+    return NULL;
+}
