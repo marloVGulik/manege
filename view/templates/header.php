@@ -9,7 +9,7 @@
 <body>
 	<nav>
 	<ul>
-		<li><a href="<?= URL ?>home/index">Home</a></li>
-		<li><a href="<?= URL ?>student/index">Students</a></li>
+		<li><a href="<?= URL ?>home">Home</a></li>
+		<li><a href="<?= URL ?>student">Students</a></li>
 	</ul>
 	</nav>
