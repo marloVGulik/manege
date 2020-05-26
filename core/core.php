@@ -10,7 +10,7 @@
 // 	return $db;
 // }
 
-function createConn($DBuser, $DBpass, $DBname) {
+function createConn() {
     $conn = NULL;
     try {
         $conn = new PDO(DB_TYPE . ':host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET, DB_USER, DB_PASS);
@@ -30,7 +30,7 @@ function DBcommand($statement, $args) {
         $args[$currentArgKey] = htmlspecialchars($args[$currentArgKey]);
     }
 
-	$connection = createConn("games-bot", "JAN8dpNUIAJjoBNx", "games");
+	$connection = createConn();
 	if($connection != NULL) {
 		$execStatement = $connection->prepare($statement);
 		$execStatement->execute($args);

@@ -3,10 +3,21 @@
 function route() {
 	// Hier wordt de functie aangeroepen die de URL op splitst op het standaard seperatie teken (in PHP is dit een /)
 	$url = splitUrl();
-	print_r($url);
+	// print_r($url);
 	// print_r(ROOT);
 	// print_r(ROOT . 'controller/' . $url['controller'] . '.php');
-	if (!isset($url['controller']) || $url['controller'] == NULL) { // Bestaat controller?
+	if(LOGIN_ENABLED && !isset($_SESSION['loggedIn'])) {
+		require(ROOT . 'controller/userportalController.php');
+		if(isset($url['action'])) {
+			if(function_exists($url['action'])) {
+				call_user_func($url['action']);
+			} else {
+				call_user_func('register');
+			}
+		} else {
+			call_user_func('register');
+		}
+	} elseif (!isset($url['controller']) || $url['controller'] == NULL) { // Bestaat controller?
 		require(ROOT . 'controller/' . DEFAULT_CONTROLLER . 'Controller.php');
 		call_user_func('index');
 	} elseif (file_exists(ROOT . 'controller/' . $url['controller'] . '.php')) { // Bestaat controller bestand?
@@ -31,10 +42,19 @@ function route() {
 // De in de functie Route aangeroepen functie splitUrl
 function splitUrl() {
 	// Als er iets in de key url zit van $_GET, wordt de code uitgevoerd
-	if (isset($_GET['url'])) {
-		// $start_url = explode("?", $_SERVER['PHP_SELF'])[0];
-		$start_url = explode("?", $_GET['url'])[0]; // ^^ De originele lijn werkt niet
+	// if (isset($_GET['url'])) {
+	if ($start_url = getRequestedPath()) {
+		//////////////////////////////////////////////////
+		// print_r(PHP_OS);
+		// if(strpos(PHP_OS, 'WIN') !== false) {
+		// 	$start_url = explode("?", $_GET['url'])[0];
+		// } else if(strpos(PHP_OS, 'Darwin') !== false) {
+		// 	$start_url = explode("?", $_SERVER['PHP_SELF'])[0];
+		// }
+		//////////////////////////////////////////////////
+
 		$tmp_url = trim($start_url , "/");
+
 
 		// Dit haalt de vreemde karakters uit de strings weg
 		$tmp_url = filter_var($tmp_url, FILTER_SANITIZE_URL);
@@ -57,4 +77,26 @@ function splitUrl() {
 		// Dit wordt teruggegeven aan de functie
 		return $url;	
 	}	
+}
+
+function getRequestedPath(){
+    // Controleer of de URL herschreven is
+
+    if(isset($_GET['apache']) ){
+        // Zo ja, geef de gehele url terug
+
+        if($_GET["url"] == "index.php"){
+            return '';
+        } else {
+            return $_GET['url'];
+        }
+
+
+    } elseif ($_SERVER['PHP_SELF']){
+        // Zo niet, geef het gevraagde pad terug
+        return $_SERVER['PHP_SELF'];
+    } else {
+        // Lukt allebei niet? Geef false terug
+        return false;
+    }
 }

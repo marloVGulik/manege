@@ -1,4 +1,6 @@
 <?php
+define('LOGIN_ENABLED', true);
+define('SALT', 'VeryGoodAndProperSalt');
 
 // Database instellingen
 define('DB_TYPE', 'mysql');		// Wat voor type database gebruik je?
