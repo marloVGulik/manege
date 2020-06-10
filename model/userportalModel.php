@@ -31,6 +31,7 @@ function checkRegisterData() {
             ])['errorCode'];
 
             // echo $errCode;
+            header("location: " . URL . "userportal/login");
         }
     }
 }
@@ -54,14 +55,16 @@ function checkLoginData() {
         if(strlen($_POST['password']) > 7) {
             $passCode = hash('sha512', SALT . $_POST['password']);
 
-            $result = DBcommand("SELECT * FROM riders WHERE `login-name` = :loginname AND `password` = :password", [
+            $result = DBcommand("SELECT id, name, admin FROM riders WHERE `login-name` = :loginname AND `password` = :password", [
                 ':loginname' => $_POST['loginName'],
                 ':password' => $passCode
             ])['output'];
             
             if(count($result) == 1) {
-                $_SESSION['loggedIn'] = true;
-                echo "test";
+                $_SESSION['loggedInRName'] = $result[0]['name'];
+                $_SESSION['loggedIn'] = $result[0]['id'];
+                $_SESSION['adminCode'] = $result[0]['admin'];
+                header("location: " . URL . "home");
             }
             // echo $errCode;
         }

@@ -24,9 +24,9 @@ function createConn() {
 // function DBcommand($connection, $statement, $args) {
 function DBcommand($statement, $args) {
     foreach(array_keys($args) as $currentArgKey) {
-        if($args[$currentArgKey] == NULL) {
-            return ['output' => NULL, 'errorCode' => "NOT ALL THINGS SET! ERROR BACKUP"]; // It should not reach this place!
-        }
+        // if($args[$currentArgKey] == NULL) {
+        //     return ['output' => NULL, 'errorCode' => "NOT ALL THINGS SET! ERROR BACKUP"]; // It should not reach this place!
+        // }
         $args[$currentArgKey] = htmlspecialchars($args[$currentArgKey]);
     }
 

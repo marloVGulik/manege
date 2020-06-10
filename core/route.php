@@ -6,7 +6,8 @@ function route() {
 	// print_r($url);
 	// print_r(ROOT);
 	// print_r(ROOT . 'controller/' . $url['controller'] . '.php');
-	if(LOGIN_ENABLED && !isset($_SESSION['loggedIn'])) {
+
+	if(LOGIN_ENABLED && !isset($_SESSION['loggedIn'])) { // Login systeem; kan uitgeschakelt worden in config
 		require(ROOT . 'controller/userportalController.php');
 		if(isset($url['action'])) {
 			if(function_exists($url['action'])) {
@@ -38,7 +39,6 @@ function route() {
 		call_user_func('error_404_con');
 	}
 }
-
 // De in de functie Route aangeroepen functie splitUrl
 function splitUrl() {
 	// Als er iets in de key url zit van $_GET, wordt de code uitgevoerd
