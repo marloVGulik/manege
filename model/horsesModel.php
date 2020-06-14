@@ -3,9 +3,9 @@
 function getAllHorses() {
     $horses = DBcommand("SELECT * FROM horses", [])['output'];
     $count = 0;
-    foreach($horses as $horse) {
-        $racename = DBcommand("SELECT racename FROM races WHERE id = :id", [':id' => $horse['id']])['output'];
-        $horses[$count]['race'] = $racename[0]['racename'];
+    foreach($horses as $horseKey => $horseValue) {
+        $racename = getSingleRace($horseValue['race']);
+        $horses[$horseKey]['race'] = $racename['racename'];
         $count++;
     }
 
@@ -14,8 +14,7 @@ function getAllHorses() {
 function getSingleHorse($id) {
     if($id != null) {
         $horseData = DBcommand("SELECT * FROM horses WHERE id = :id", [':id' => $id])['output'][0];
-        if(!isset($horseData[0])) header("location: " . URL . "horses"); // Check if it exists
-
+        if(!isset($horseData['id'])) header("location: " . URL . "horses"); // Check if it exists
         $outputData = array(
             'name' => $horseData['name'],
             'race' => getSingleRace($horseData['race'])['racename'],
@@ -36,7 +35,7 @@ function getSingleHorse($id) {
 
         return $outputData;
     }
-    header("location: " . URL . "horses");
+    // header("location: " . URL . "horses");
 }
 function getAllRaces() {
     return DBcommand("SELECT * FROM races", [])['output'];
@@ -102,7 +101,7 @@ function checkHorseCreation() {
             ':usedForJump' => $_POST['usedForJump']
         ])['errorCode'];
 
-        header("location: " . URL . "horses/races");
+        header("location: " . URL . "horses");
     }
 }
 function checkHorseRaceEdit() {
@@ -135,16 +134,56 @@ function checkHorseRaceEdit() {
         header("location: " . URL . "horses/races");
     }
 }
+function checkHorseEdit() {
+    $tokenArray = [
+        'id',
+        'name',
+        'race',
+        'witherHeight',
+        'age',
+        'usedForJump'
+    ];
+    if(!isset($_POST['usedForJump'])) {
+        $_POST['usedForJump'] = 0;
+    }
+    $doContinue = true;
+    foreach($tokenArray as $token) {
+        if(isset($_POST[$token])) {
+            if(strlen($_POST[$token]) < 1) {
+                $doContinue = false;
+            }
+        } else {
+            $doContinue = false;
+        }
+    }
+    if($doContinue) {
+        $errCode = DBcommand("UPDATE horses SET `name` = :name, `race` = :race, `age` = :age, `height` = :height, `used-for-jump` = :usedForJump WHERE `horses` . `id` = :id", [
+            ':id' => $_POST['id'],
+            ':name' => $_POST['name'],
+            ':race' => $_POST['race'],
+            ':age' => $_POST['age'],
+            ':height' => $_POST['witherHeight'],
+            ':usedForJump' => $_POST['usedForJump']
+        ])['errorCode'];
+
+        // echo $errCode;
+        header("location: " . URL . "horses");
+    }
+}
 
 function delRace($id) {
-    if($id != null) {
+    if($id != null && $_SESSION['adminCode'] > 0) {
         DBcommand("DELETE FROM races WHERE id = :id", [':id' => $id]);
-    } else {
-        echo "uwu";
+        $horsesToRemove = DBcommand("SELECT id FROM horses WHERE `race` = :id", [':id' => $id])['output'];
+        DBcommand("DELETE FROM horses WHERE `race` = :id", [':id' => $id]);
+        foreach($horsesToRemove as $horseToRemove) {
+            DBcommand("DELETE FROM planning WHERE `horse-id` = :horse", [':horse' => $horseToRemove['id']]);
+        }
     }
 }
 function delHorse($id) {
-    if($id != null) {
+    if($id != null && $_SESSION['adminCode'] > 0) {
         DBcommand("DELETE FROM horses WHERE id = :id", [':id' => $id]);
+        DBcommand("DELETE FROM planning WHERE `horse-id` = :id", [':id' => $id]);
     }
 }

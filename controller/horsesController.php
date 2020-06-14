@@ -30,12 +30,18 @@ function edit($action, $id) {
         checkHorseRaceEdit();
         render("horse/editRace", array('raceInfo' => getSingleRace($id)));
     } else if($action == "horse") {
-        render("horse/editHorse");
+        checkHorseEdit();
+        $horseData = getSingleHorse($id);
+        render("horse/editHorse", array(
+            'allRaces' => getAllRaces(),
+            'id' => $id,
+            'horseData' => $horseData
+        ));
     } else {
         header("location: " . URL . "horses");
     }
 }
-function delete($action) {
+function delete($action = "-1") {
     if($action == "race") {
         delRace($_POST['id']);
         header("location: " . URL . "horses/races");
@@ -46,9 +52,12 @@ function delete($action) {
         header("location: " . URL . "horses");
     }
 }
-function details($id) {
+function details($id = "-1") {
     $horse = getSingleHorse($id);
-    render("horse/details", array(
-        'horseData' => $horse
-    ));
+    if(!empty($horse)) {
+        render("horse/details", array(
+            'horseData' => $horse,
+            'id' => $id
+        ));
+    }
 }
